@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>剛好學：課堂互動so easy</title>
+    <title>剛好學：課堂互動V2.5(阿翰plus2.5.5)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1176,7 +1176,7 @@
                 <p class="text-xs">App ID: <span id="app-id-display"></span> &nbsp;&bull;&nbsp; User ID: <span id="user-id-display"></span></p>
                 <div class="mt-2">
                     <a href="https://kentxchang.blogspot.tw" target="_blank" rel="noopener noreferrer" class="made-by-text !bg-white/50 !text-indigo-600 hover:!bg-white">
-                       Made by 阿剛老師V2.5
+                       Made by 阿剛老師V2.5(阿翰plus2.5.5)
                     </a>
                 </div>
             </div>
@@ -1191,63 +1191,122 @@
             </div>
         </div>
 
-        <div id="teacher-menu-view" class="hidden text-center relative">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8">教師面板：請選擇互動模式</h2>
-            <div class="absolute top-4 right-4 flex flex-col items-end">
-                <div class="flex items-center gap-2 p-2 rounded-md bg-white shadow-sm">
-                    <div id="student-status-area" class="text-gray-600 text-lg cursor-pointer flex items-center justify-center hover:bg-gray-200 transition-colors">
-                        <span>目前有 <span id="active-student-count" class="font-bold text-blue-700">0</span> 位學生在線</span>
+      <div id="teacher-menu-view" class="hidden flex w-full h-screen bg-gray-50">
+            
+            <div id="feedback-panel" class="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col transition-all duration-300">
+                <h3 class="text-xl font-bold text-gray-700 mb-4 text-center border-b pb-2">🤔 學生上課感受</h3>
+                <div class="flex-grow flex flex-col">
+                    <div class="grid grid-cols-2 gap-4 mb-4 items-center">
+                        <div class="relative w-full h-40">
+                            <svg id="feedback-pie-chart" class="w-full h-full"></svg>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg text-center">
+                            <p class="text-gray-600 text-sm">總計人數</p>
+                            <p id="feedback-total-votes" class="text-4xl font-bold text-blue-600">0</p>
+                        </div>
                     </div>
-                    <button id="refresh-student-count-btn" class="text-gray-500 hover:text-blue-700 transition-colors" title="更新統計">
-                        <i class="fas fa-sync-alt"></i>
+                    
+                    <div class="overflow-x-auto flex-grow">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-sm">
+                                    <th class="border px-3 py-2 text-left">選項</th>
+                                    <th class="border px-3 py-2 text-right">票數</th>
+                                    <th class="border px-3 py-2 text-right">百分比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="feedback-stats-table-body">
+                                </tbody>
+                        </table>
+                    </div>
+                    <p class="text-xs text-gray-400 text-center mt-2 flex-shrink-0">此數據為最近一次「感受」互動的結果</p>
+                </div>
+            </div>
+         <div id="main-panel" class="relative flex-grow p-6 flex flex-col items-center overflow-y-auto transition-all duration-300">
+                <div class="absolute top-4 left-4">
+                     <button id="end-class-session-menu-btn" class="btn btn-red !w-auto text-base h-11 px-4 py-2 flex items-center justify-center" title="下課並清空資料">
+                        <i class="fas fa-door-open mr-2"></i> <span id="end-class-button-text">下課 🔚</span>
                     </button>
                 </div>
-                </div>
+                
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">教師面板：請選擇互動模式</h2>
 
-            <div class="absolute top-4 left-4">
-                <button id="end-class-session-menu-btn" class="btn btn-red !w-auto text-base h-11 px-4 py-2 flex items-center justify-center" title="下課並清空資料">
-                    <i class="fas fa-door-open mr-2"></i> <span id="end-class-button-text">下課 🔚</span>
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto w-fit">
-                <button data-mode="true_false" class="btn btn-primary !w-40 !h-40 flex items-center justify-center text-4xl">A. 是非題</button>
-                <button id="choice-sequencing-matching-menu-btn" class="btn btn-green !w-40 !h-40 flex items-center justify-center text-3xl">B. 選擇/排序/配對</button>
-                <button data-mode="text_input" class="btn btn-orange !w-40 !h-40 flex items-center justify-center text-4xl">C. 文字題</button>
-                <button data-mode="drawing" class="btn btn-purple !w-40 !h-40 flex items-center justify-center text-4xl">D. 繪圖題</button>
-                <button data-mode="url_dispatch" class="btn btn-teal !w-40 !h-40 flex items-center justify-center text-4xl">E. 派送網址/HTML</button>
-                <button data-mode="recording" class="btn bg-indigo-600 hover:bg-indigo-700 !w-40 !h-40 flex items-center justify-center text-4xl">F. 錄音題</button>
-                <button id="reading-comprehension-settings-btn" class="btn bg-red-500 hover:bg-red-600 !w-40 !h-40 flex items-center justify-center text-4xl">G. 閱讀測驗</button>
-                <button data-mode="quick_answer" class="btn bg-orange-500 hover:bg-orange-600 !w-40 !h-40 flex items-center justify-center text-4xl">H. 搶答</button>
-                <button id="quick-poll-settings-btn" class="btn bg-lime-500 hover:bg-lime-600 !w-40 !h-40 flex items-center justify-center text-4xl">I. 快速投票</button>
-            </div>
-            <div class="mt-8 flex flex-col items-center">
-                <div class="flex gap-4 mb-4">
-                    <label for="teacher-image-upload-input" class="btn btn-purple !w-auto text-base h-11 px-4 py-2 flex items-center justify-center cursor-pointer">
-                        <i class="fas fa-upload mr-2"></i> 上傳繪圖背景圖片 (教師用) 🖼️
-                    </label>
-                    <input type="file" id="teacher-image-upload-input" accept="image/*" class="hidden">
-                    <button id="clear-teacher-background-btn" class="btn btn-red !w-auto text-base h-11 px-4 py-2 flex items-center justify-center">
-                        <i class="fas fa-trash mr-2"></i> 清除背景圖 🗑️
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto w-fit mb-6">
+                    <button data-mode="true_false" class="btn btn-primary !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">✅</span> 是非題
+                    </button>
+                    <button id="choice-sequencing-matching-menu-btn" class="btn btn-green !w-40 !h-40 flex flex-col items-center justify-center text-1xl gap-2">
+                        <span class="text-5xl">📊</span> 選擇/排序/配對
+                    </button>
+                    <button data-mode="text_input" class="btn btn-orange !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">✍️</span> 文字題
+                    </button>
+                    <button data-mode="drawing" class="btn btn-purple !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">🎨</span> 繪圖題
+                    </button>
+                    <button data-mode="url_dispatch" class="btn btn-teal !w-40 !h-40 flex flex-col items-center justify-center text-1xl gap-2">
+                        <span class="text-5xl">🌐</span> 網址/HTML
+                    </button>
+                    <button data-mode="recording" class="btn bg-indigo-600 hover:bg-indigo-700 !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">🎤</span> 錄音題
+                    </button>
+                    <button id="reading-comprehension-settings-btn" class="btn bg-red-500 hover:bg-red-600 !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">📖</span> 閱讀
+                    </button>
+                    <button data-mode="quick_answer" class="btn bg-orange-500 hover:bg-orange-600 !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">⚡️</span> 搶答
+                    </button>
+                    <button id="quick-poll-settings-btn" class="btn bg-lime-500 hover:bg-lime-600 !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">👍</span> 投票
+                    </button>
+                    <button data-mode="feedback" class="btn bg-cyan-500 hover:bg-cyan-600 !w-40 !h-40 flex flex-col items-center justify-center text-3xl gap-2">
+                        <span class="text-5xl">🤔</span> 感受
                     </button>
                 </div>
-                <p id="teacher-image-status" class="text-gray-600 text-sm mt-2">目前沒有背景圖片。可選擇檔案或直接貼上(Ctrl+V)。</p>
-                <div id="teacher-image-preview-container" class="mt-4 hidden border border-gray-300 rounded-lg p-2 max-w-xs">
-                    <img id="teacher-image-preview" src="" alt="背景圖片預覽" class="w-full h-auto rounded-md object-contain">
+                
+                <div class="mt-auto pt-4 border-t w-full max-w-lg mx-auto flex flex-col items-center">
+                    <div class="flex gap-4 mb-4">
+                        <label for="teacher-image-upload-input" class="btn btn-purple !w-auto text-base h-11 px-4 py-2 flex items-center justify-center cursor-pointer">
+                            <i class="fas fa-upload mr-2"></i> 上傳繪圖背景圖片 (教師用) 🖼️
+                        </label>
+                        <input type="file" id="teacher-image-upload-input" accept="image/*" class="hidden">
+                        <button id="clear-teacher-background-btn" class="btn btn-red !w-auto text-base h-11 px-4 py-2 flex items-center justify-center">
+                            <i class="fas fa-trash mr-2"></i> 清除背景圖 🗑️
+                        </button>
+                    </div>
+                    <p id="teacher-image-status" class="text-gray-600 text-sm mt-2">目前沒有背景圖片。可選擇檔案或直接貼上(Ctrl+V)。</p>
+                    <div id="teacher-image-preview-container" class="mt-4 hidden border border-gray-300 rounded-lg p-2 max-w-xs">
+                        <img id="teacher-image-preview" src="" alt="背景圖片預覽" class="w-full h-auto rounded-md object-contain">
+                    </div>
+                </div>
+
+                <div class="absolute bottom-4 left-4">
+                    <button id="ai-settings-btn" class="text-gray-500 hover:text-blue-700 transition-colors text-3xl" title="AI 設定">
+                        <i class="fas fa-robot"></i>
+                    </button>
+                </div>
+                 <div class="absolute bottom-4 right-4">
+                     <button id="url-dispatch-settings-btn" class="text-gray-500 hover:text-teal-700 transition-colors text-3xl" title="設定派送網址/HTML">
+                        <i class="fas fa-link"></i>
+                    </button>
                 </div>
             </div>
-
-            <div class="absolute bottom-4 left-4">
-                <button id="ai-settings-btn" class="text-gray-500 hover:text-blue-700 transition-colors text-3xl" title="AI 設定">
-                    <i class="fas fa-robot"></i>
-                </button>
+            <div id="student-status-panel" class="w-1/4 bg-white border-l border-gray-200 p-4 flex flex-col relative transition-all duration-300">
+                
+                
+                <div class="flex items-center justify-between mb-4 border-b pb-2">
+                    <h3 class="text-xl font-bold text-gray-700">在線學生</h3>
+                    <div id="student-status-area" class="text-gray-600 text-lg cursor-pointer flex items-center justify-center hover:bg-gray-200 transition-colors px-2 rounded-md">
+                        <span>共 <span id="active-student-count" class="font-bold text-blue-700">0</span> 位</span>
+                        <button id="refresh-student-count-btn" class="text-gray-500 hover:text-blue-700 transition-colors ml-2" title="更新統計">
+                           <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="online-student-list" class="flex-grow overflow-y-auto grid grid-cols-3 gap-2">
+                    </div>
             </div>
-            <div class="absolute bottom-4 right-4">
-                 <button id="url-dispatch-settings-btn" class="text-gray-500 hover:text-teal-700 transition-colors text-3xl" title="設定派送網址/HTML">
-                    <i class="fas fa-link"></i>
-                </button>
             </div>
-        </div>
         
         <div id="teacher-monitor-view" class="hidden">
             <div class="flex justify-between items-center mb-6">
@@ -1298,13 +1357,13 @@
              <h2 id="student-welcome-msg" class="text-3xl font-bold text-gray-800 mb-6"></h2>
              <div class="flex items-center justify-center space-x-3 text-xl text-gray-600">
                 <i class="fas fa-spinner fa-spin"></i>
-                <p>請等待老師開始互動...</p>
+                <p>⏳️請等待老師開始互動...</p>
             </div>
         </div>
         
         <div id="student-interaction-view" class="hidden relative">
             <div id="student-pause-overlay" class="pause-overlay hidden">
-                <p>老師已暫停回覆</p>
+                <p>✋老師已暫停回覆</p>
                 <i class="fas fa-hand-paper"></i>
             </div>
 
@@ -1474,6 +1533,23 @@
                         <h4 class="text-2xl font-bold text-green-700 mb-2">投票成功！</h4>
                         <p class="text-gray-700">感謝您的參與</p>
                     </div>
+                </div>
+            </div>
+			<div id="interaction-feedback" class="hidden text-center flex flex-col items-center justify-center h-full min-h-screen p-4">
+                <h3 class="text-3xl font-bold text-gray-800 text-center mb-8">🤔 現在的感覺如何？</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+                    <button data-answer="懂了" class="answer-btn flex flex-col items-center justify-center p-6 bg-green-500 hover:bg-green-600 text-white rounded-lg shadow-lg transform hover:scale-105 transition h-52">
+                        <span class="text-6xl mb-4">😍</span>
+                        <span class="text-3xl font-bold">懂了</span>
+                    </button>
+                    <button data-answer="有點了解" class="answer-btn flex flex-col items-center justify-center p-6 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-lg transform hover:scale-105 transition h-52">
+                        <span class="text-6xl mb-4">🙄</span>
+                        <span class="text-3xl font-bold">有點了解</span>
+                    </button>
+                    <button data-answer="不懂" class="answer-btn flex flex-col items-center justify-center p-6 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow-lg transform hover:scale-105 transition h-52">
+                        <span class="text-6xl mb-4">🤢</span>
+                        <span class="text-3xl font-bold">不懂</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -2253,6 +2329,8 @@
         let lastSelectedModalStudent = null; // NEW: To track the previously selected student in the modal for lottery.
 
         let interactionModeUnsubscribe = null;
+		let lastFeedbackData = {}; // V2.5.2 新增：儲存上一次的感受統計結果
+        let studentFeedbackStatus = {}; // V2.5.2 新增：儲存每個學生的感受狀態
         let questionBanks = []; // Question Bank storage in memory (will be cleared when class ends)
         let sequencingQuestionBanks = []; // Sequencing Question Bank storage
         let matchingQuestionBanks = []; // Matching Question Bank storage
@@ -2371,6 +2449,7 @@
             quick_poll: document.getElementById('interaction-quick-poll'), // Quick poll UI
             sequencing: document.getElementById('interaction-sequencing'), // Sequencing UI
             matching: document.getElementById('interaction-matching'), // Matching UI
+            feedback: document.getElementById('interaction-feedback'), // 上課感受
         };
 
         // --- Core Logic Functions ---
@@ -2378,13 +2457,26 @@
          * Displays the specified view section.
          * @param {string} viewName - The name of the view to display (key in `views` object).
          */
-        function showView(viewName) {
+ function showView(viewName) {
             const body = document.querySelector('body');
+            const appContainer = document.getElementById('app-container');
             body.classList.remove('initial-view-background');
 
             Object.values(views).forEach(view => view.classList.add('hidden'));
             if (views[viewName]) {
                 views[viewName].classList.remove('hidden');
+
+                // 【V2.5.4 修改】針對教師面板，移除所有外層容器的限制
+                if (viewName === 'teacherMenu') {
+                    // 移除寬度限制與內邊距，讓面板真正全螢幕
+                    appContainer.classList.remove('max-w-4xl', 'mx-auto', 'p-4', 'md:p-6');
+                    updateFeedbackDisplay(lastFeedbackData);
+                    updateStudentStatusList();
+                } else {
+                    // 恢復其他頁面的容器樣式
+                    appContainer.classList.add('max-w-4xl', 'mx-auto', 'p-4', 'md:p-6');
+                }
+                
                 if (viewName === 'entry') {
                     body.classList.add('initial-view-background');
                 }
@@ -2584,6 +2676,13 @@
                     document.getElementById('quick-poll-options-container').classList.remove('hidden');
                     document.getElementById('quick-poll-voted-status').classList.add('hidden');
                     document.getElementById('quick-poll-question-display').textContent = '';
+                    break;
+                case 'feedback':
+                    interactionUIs[mode].querySelectorAll('.answer-btn').forEach(btn => {
+                        btn.disabled = false;
+                        // 移除可能存在的灰色樣式
+                        btn.classList.remove('bg-gray-400', 'cursor-not-allowed', 'opacity-50');
+                    });
                     break;
             }
         }
@@ -3062,7 +3161,155 @@
         function hideMessage() {
             document.getElementById('message-box').classList.add('hidden');
         }
+// --- 【V2.5.2 新增 V1.1.0 修改】教師面板畫面更新函式 ---
 
+/**
+ * (V2.5.2) 繪製左側面板的感受統計圓餅圖
+ * @param {object} data - 格式為 { '懂了': 5, '有點了解': 3, '不懂': 1 }
+ */
+function drawFeedbackPieChart(data) {
+    const container = d3.select("#feedback-pie-chart");
+    container.selectAll("*").remove();
+
+    const chartData = Object.entries(data).map(([key, value]) => ({ label: key, value: value }));
+    const total = chartData.reduce((sum, d) => sum + d.value, 0);
+
+    if (total === 0) {
+        container.append("text")
+            .attr("x", "50%")
+            .attr("y", "50%")
+            .attr("text-anchor", "middle")
+            .style("font-size", "14px")
+            .style("fill", "#9ca3af")
+            .text("尚無數據");
+        return;
+    }
+
+    const width = container.node().getBoundingClientRect().width;
+    const height = container.node().getBoundingClientRect().height;
+    const radius = Math.min(width, height) / 2 - 5;
+
+    const svg = container.attr("viewBox", `0 0 ${width} ${height}`)
+        .append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+    const color = d3.scaleOrdinal()
+        .domain(['懂了', '有點了解', '不懂'])
+        .range(['#16a34a', '#f59e0b', '#dc2626']); // Green, Amber, Red
+
+    const pie = d3.pie().value(d => d.value).sort(null);
+    const arc = d3.arc().innerRadius(radius * 0.5).outerRadius(radius); // 甜甜圈圖
+    const labelArc = d3.arc().innerRadius(radius * 0.7).outerRadius(radius * 0.7);
+
+    const arcs = svg.selectAll(".arc")
+        .data(pie(chartData))
+        .enter().append("g")
+        .attr("class", "arc");
+
+    arcs.append("path")
+        .attr("d", arc)
+        .attr("fill", d => color(d.data.label))
+        .attr("stroke", "white")
+        .style("stroke-width", "2px");
+
+    arcs.append("text")
+        .filter(d => d.data.value > 0) // 只在有數據的區塊顯示文字
+        .attr("transform", d => `translate(${labelArc.centroid(d)})`)
+        .attr("dy", "0.35em")
+        .style("fill", "white")
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .style("text-anchor", "middle")
+        .text(d => d.data.value);
+}
+
+/**
+ * (V2.5.2) 更新左側面板的感受統計顯示
+ * @param {object} data - 格式為 { '懂了': 5, '有點了解': 3, '不懂': 1 }
+ */
+function updateFeedbackDisplay(data) {
+    const tableBody = document.getElementById('feedback-stats-table-body');
+    const totalVotesEl = document.getElementById('feedback-total-votes');
+    if (!tableBody || !totalVotesEl) return;
+
+    const options = [
+        { label: '懂了', emoji: '😍', colorClass: 'text-green-600' },
+        { label: '有點了解', emoji: '🙄', colorClass: 'text-yellow-600' },
+        { label: '不懂', emoji: '🤢', colorClass: 'text-red-600' }
+    ];
+
+    const stats = {
+        '懂了': data['懂了'] || 0,
+        '有點了解': data['有點了解'] || 0,
+        '不懂': data['不懂'] || 0,
+    };
+
+    const totalVotes = Object.values(stats).reduce((sum, val) => sum + val, 0);
+    totalVotesEl.textContent = totalVotes;
+    
+    tableBody.innerHTML = ''; // 清空舊表格
+
+    options.forEach(opt => {
+        const count = stats[opt.label];
+        const percentage = totalVotes > 0 ? ((count / totalVotes) * 100).toFixed(1) : '0.0';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="border px-3 py-2 flex items-center gap-2">
+                <span class="text-xl">${opt.emoji}</span>
+                <span class="font-medium ${opt.colorClass}">${opt.label}</span>
+            </td>
+            <td class="border px-3 py-2 text-right font-bold ${opt.colorClass}">${count}</td>
+            <td class="border px-3 py-2 text-right">${percentage}%</td>
+        `;
+        tableBody.appendChild(row);
+    });
+
+    drawFeedbackPieChart(stats);
+}
+
+/**
+ * (V1.1.0) 更新右側的在線學生列表與其感受狀態
+ */
+function updateStudentStatusList() {
+    const container = document.getElementById('online-student-list');
+    if (!container) return;
+    
+    container.innerHTML = ''; // 清空
+
+    if (activeStudentNames.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-sm col-span-full">目前沒有學生在線</p>';
+        return;
+    }
+
+    // 根據學生姓名排序
+    activeStudentNames.sort((a, b) => a.localeCompare(b, 'zh-Hant'));
+
+    activeStudentNames.forEach(name => {
+        const status = studentFeedbackStatus[name] || 'unknown'; // 取得學生狀態，預設為未知
+        let icon = '🤔'; // 預設圖示
+        let statusClass = 'status-icon-unknown';
+
+        if (status === '懂了') {
+            icon = '😍';
+            statusClass = 'status-icon-懂了';
+        } else if (status === '有點了解') {
+            icon = '🙄';
+            statusClass = 'status-icon-有點了解';
+        } else if (status === '不懂') {
+            icon = '🤢';
+            statusClass = 'status-icon-不懂';
+        }
+        
+        const item = document.createElement('div');
+        item.className = 'student-status-item';
+        // V1.1.0 新結構：圖示 + 姓名
+        item.innerHTML = `
+            <span class="${statusClass}">${icon}</span>
+            <span>${name}</span>
+        `;
+        container.appendChild(item);
+    });
+}
         // --- Firebase Functions ---
 
         /**
@@ -3083,8 +3330,8 @@
             const viewReadingQuestionsBtn = document.getElementById('view-reading-questions-btn'); // NEW
             const downloadResponsesBtn = document.getElementById('download-responses-btn'); // NEW
 
-            // MODIFIED: Show statistics button for true_false, multiple_choice, and reading_comprehension
-            showStatisticsBtn.classList.toggle('hidden', mode !== 'true_false' && mode !== 'multiple_choice' && mode !== 'reading_comprehension');
+            // MODIFIED: Show statistics button for true_false, multiple_choice, reading_comprehension, and feedback
+            showStatisticsBtn.classList.toggle('hidden', !['true_false', 'multiple_choice', 'reading_comprehension', 'feedback'].includes(mode));
 
             // NEW: Show view questions button only for multiple_choice with custom questions
             const hasCustomQuestions = mode === 'multiple_choice' && options.customQuestions && options.customQuestions.length > 0;
@@ -3513,10 +3760,9 @@
          * (Teacher) Listens for all student submissions and dynamically displays them.
          * @param {string} mode - The current interaction mode, used to determine the answer type.
          */
-        function listenToStudentSubmissions(mode) {
+  function listenToStudentSubmissions(mode) {
              if (studentResponsesUnsubscribe) studentResponsesUnsubscribe();
              
-             // Use classroomCode in the Firestore path
              const studentsColRef = collection(db, 'artifacts', baseAppId, 'public', 'data', 'classrooms', classroomCode, 'studentResponses');
              const container = document.getElementById('student-responses-container');
 
@@ -3524,18 +3770,25 @@
                 container.innerHTML = ''; 
                 lastSelectedStudentCard = null; 
                 
-                // REMOVED: document.getElementById('responded-student-count').textContent = querySnapshot.size; 
-
                 if (querySnapshot.empty) {
                     if (mode !== 'url_dispatch') { 
                         container.innerHTML = '<p class="text-gray-500 text-center col-span-full">正在等待學生作答...</p>';
                     }
                     allStudentResponses = [];
                     clearStudentsByAnswerList();
+                    // 【V2.5.5 修正】如果沒有人回應，也要清空感受統計
+                    if (mode === 'feedback') {
+                        lastFeedbackData = {};
+                        studentFeedbackStatus = {}; // 也要清空個別學生狀態
+                        updateFeedbackDisplay(lastFeedbackData);
+                        updateStudentStatusList();
+                    }
                     return;
                 }
                 
                 let responses = []; 
+                const feedbackCounts = { '懂了': 0, '有點了解': 0, '不懂': 0 };
+
                 querySnapshot.forEach((doc) => {
                     const student = doc.data();
                     responses.push(student);
@@ -3543,6 +3796,8 @@
                     card.className = 'student-response-item'; 
 
                     let answerContentHTML = ''; 
+                    
+                    // ... (中間一大段 case 'drawing', case 'recording' 等等都完全一樣，不用動) ...
                     
                     if (student.answer === undefined || student.answer === null) {
                         answerContentHTML = `<p class="text-gray-400">尚未作答</p>`;
@@ -3552,7 +3807,7 @@
                         } else {
                             answerContentHTML = `<p class="text-gray-500">繪圖未完成或格式錯誤</p>`;
                         }
-                    } else if (mode === 'recording') { // New: Handle recording answers
+                    } else if (mode === 'recording') {
                         if (String(student.answer).startsWith('data:audio')) {
                             answerContentHTML = `<audio controls src="${student.answer}" class="w-full"></audio>`;
                         } else {
@@ -3561,7 +3816,6 @@
                     } else if (mode === 'text_input') {
                         answerContentHTML = `<p class="text-gray-700 whitespace-pre-wrap">${student.answer || '(空白)'}</p>`;
                     } else if (mode === 'multiple_choice' && Array.isArray(student.answer) && currentMultipleChoiceQuestions) {
-                        // NEW: Handle custom multiple choice answers
                         answerContentHTML = `<div class="flex flex-col w-full">`;
                         student.answer.forEach((qAns, index) => {
                             const question = currentMultipleChoiceQuestions[qAns.qIndex];
@@ -3579,7 +3833,6 @@
                         answerContentHTML += `</div>`;
                     }
                     else if (mode === 'quick_answer') {
-                        // Handle quick answer results
                         if (student.answer && student.answer.includes('搶答成功')) {
                             answerContentHTML = `<div class="text-center">
                                 <i class="fas fa-trophy text-yellow-500 text-4xl mb-2"></i>
@@ -3591,7 +3844,6 @@
                         }
                     }
                     else if (mode === 'sequencing') {
-                        // Handle sequencing answers
                         try {
                             const studentOrder = JSON.parse(student.answer);
                             const correctOrder = sequencingData.correctOrder;
@@ -3615,7 +3867,6 @@
                         }
                     }
                     else if (mode === 'matching') {
-                        // Handle matching answers
                         try {
                             const studentMatches = JSON.parse(student.answer);
                             const correctPairs = matchingData.pairs;
@@ -3642,7 +3893,6 @@
                         }
                     }
                     else if (mode === 'reading_comprehension') {
-                        // Handle reading comprehension answers
                         try {
                             const studentAnswers = JSON.parse(student.answer);
                             const questions = readingComprehensionData.questions;
@@ -3669,7 +3919,39 @@
                             answerContentHTML = `<p class="text-gray-500">答案格式錯誤</p>`;
                         }
                     }
-                    else { // Default multiple choice (1-4)
+                    else if (mode === 'feedback') {
+                        let iconClass = '';
+                        let colorClass = '';
+						studentFeedbackStatus[student.name] = student.answer;
+						updateStudentStatusList(); // V1.1.0 新增：收到回饋後立即更新右側面板
+                        
+                        if (feedbackCounts.hasOwnProperty(student.answer)) {
+                            feedbackCounts[student.answer]++;
+                        }
+
+                        switch(student.answer) {
+                            case '懂了':
+                                iconClass = 'fa-check-circle';
+                                colorClass = 'text-green-600';
+                                break;
+                            case '有點了解':
+                                iconClass = 'fa-question-circle';
+                                colorClass = 'text-yellow-600';
+                                break;
+                            case '不懂':
+                                iconClass = 'fa-times-circle';
+                                colorClass = 'text-red-600';
+                                break;
+                            default:
+                                iconClass = 'fa-comment-dots';
+                                colorClass = 'text-gray-600';
+                        }
+                        answerContentHTML = `<div class="flex items-center justify-center gap-2 text-xl font-bold ${colorClass}">
+                                                <i class="fas ${iconClass}"></i>
+                                                <span>${student.answer}</span>
+                                            </div>`;
+                    }
+                    else {
                         answerContentHTML = `<p class="text-2xl font-bold text-blue-600">${student.answer}</p>`;
                     }
                     
@@ -3694,17 +3976,19 @@
 
                 allStudentResponses = responses;
 
-                // Special handling for quick answer mode
+                // 【V2.5.5 關鍵修正】處理完所有學生的回饋後，在這裡統一更新畫面！
+                if (mode === 'feedback') {
+                    lastFeedbackData = feedbackCounts; // 把剛才計算好的總數存起來
+                    updateFeedbackDisplay(lastFeedbackData); // 通知左邊面板更新
+                    updateStudentStatusList(); // 通知右邊面板更新
+                }
+
                 if (mode === 'quick_answer') {
-                    console.log('Teacher: Processing quick answer responses:', responses);
                     const quickAnswerWinners = responses.filter(student =>
                         student.answer && student.answer.includes('搶答成功')
                     );
-                    console.log('Teacher: Quick answer winners found:', quickAnswerWinners);
-
                     if (quickAnswerWinners.length > 0) {
-                        const winner = quickAnswerWinners[0]; // First one to answer
-                        console.log('Teacher: Showing winner:', winner.name);
+                        const winner = quickAnswerWinners[0];
                         showQuickAnswerWinner(winner.name);
                     }
                 }
@@ -3753,7 +4037,8 @@
                     lastSelectedModalStudent.classList.remove('modal-selected-student-border');
                     lastSelectedModalStudent = null;
                 }
-
+// (V2.5.2) 更新右側面板的學生列表
+                updateStudentStatusList();
                 if (activeStudentNames.length === 0) {
                     modalStudentNamesDiv.innerHTML = '<p class="text-gray-500 text-sm col-span-full">沒有學生在線</p>';
                 } else {
@@ -4358,6 +4643,7 @@
                         return false;
                     }
                 }
+                if (mode === 'feedback') return true;
                 return false;
             });
 
@@ -4390,6 +4676,14 @@
                 if (readingComprehensionData && readingComprehensionData.questions) {
                     drawReadingComprehensionChart(filteredResponses, readingComprehensionData.questions);
                 }
+            } else if (mode === 'feedback') {
+                chartData = { '懂了': 0, '有點了解': 0, '不懂': 0 };
+                filteredResponses.forEach(r => {
+                    if (chartData.hasOwnProperty(r.answer)) {
+                        chartData[r.answer]++;
+                    }
+                });
+                drawPieChart(chartData, totalValidResponses);
             }
         }
 
@@ -4398,7 +4692,18 @@
             const height = +chartSvg.attr("height");
             const radius = Math.min(width, height) / 2 - 20;
             const g = chartSvg.append("g").attr("transform", `translate(${width / 2},${height / 2})`);
-            const color = d3.scaleOrdinal().domain(Object.keys(data)).range(['#16a34a', '#dc2626']); // Green for O, Red for X
+
+            let color;
+            if (currentInteractionMode === 'feedback') {
+                color = d3.scaleOrdinal()
+                    .domain(['懂了', '有點了解', '不懂'])
+                    .range(['#16a34a', '#f59e0b', '#dc2626']); // Green, Yellow, Red
+            } else { // Default for true_false
+                color = d3.scaleOrdinal()
+                    .domain(Object.keys(data))
+                    .range(['#16a34a', '#dc2626']); // Green for O, Red for X
+            }
+
             const pie = d3.pie().value(d => d[1]).sort(null);
             const arc = d3.arc().innerRadius(0).outerRadius(radius);
             const arcs = g.selectAll(".arc").data(pie(Object.entries(data))).enter().append("g").attr("class", "arc");
@@ -4407,14 +4712,17 @@
                 .attr("d", arc) 
                 .attr("fill", d => color(d.data[0])) 
                 .attr("stroke", "white").style("stroke-width", "2px")
-                .on("click", (event, d) => displayStudentsForAnswer(d.data[0], 'true_false')); 
+                .on("click", (event, d) => displayStudentsForAnswer(d.data[0], currentInteractionMode)); 
 
             arcs.append("text")
                 .attr("transform", d => `translate(${arc.centroid(d)})`)
                 .attr("dy", "0.35em")
                 .text(d => {
                     const percentage = totalValidResponses > 0 ? ((d.data[1] / totalValidResponses) * 100).toFixed(1) : 0;
-                    return `${d.data[0]}: ${d.data[1]} (${percentage}%)`;
+                    if (d.data[1] > 0) { // 只在有數據時顯示文字
+                        return `${d.data[0]}: ${d.data[1]} (${percentage}%)`;
+                    }
+                    return '';
                 }) 
                 .style("font-size", "14px").style("text-anchor", "middle").style("fill", "white");
         }
@@ -5396,6 +5704,9 @@
                 lastSelectedModalStudent = null; // NEW: Clear modal lottery highlight
                 isResponsePaused = false; // NEW: Reset pause state
                 currentMultipleChoiceQuestions = null; // NEW: Clear custom MC questions
+				// (V2.5.2) 下課時清空感受統計數據
+                lastFeedbackData = {};
+                studentFeedbackStatus = {};
 
                 document.getElementById('student-responses-container').innerHTML = '<p class="text-gray-500 text-center col-span-full">正在等待學生作答...</p>';
                 document.getElementById('active-student-count').textContent = '0';
@@ -5606,6 +5917,18 @@
 
 
         function setupEventListeners() {
+		// --- 【V1.1.0 修改】三欄式面板事件監聽 ---
+            // (V1.1.0) 移除舊的面板收合功能
+            
+            // (V1.1.0) 當老師點擊「感受」按鈕時，清空上一次的統計數據
+            const feedbackBtn = document.querySelector('button[data-mode="feedback"]');
+            feedbackBtn.addEventListener('click', () => {
+                lastFeedbackData = {};
+                studentFeedbackStatus = {};
+                updateFeedbackDisplay(lastFeedbackData); // 立即清空左邊面板
+                updateStudentStatusList(); // 立即將右側學生狀態重設為預設圖示
+            });
+            // --- 三欄式面板事件監聽 結束 ---
             // Entry screen.
             document.getElementById('teacher-entry-btn').addEventListener('click', () => {
                 // Check if passwd=no parameter is present in URL
@@ -5873,7 +6196,27 @@
                 e.currentTarget.disabled = true;
                 e.currentTarget.classList.replace('btn-primary', 'btn-gray');
             });
-            
+            // NEW: 上課感受按鈕 (懂了/有點了解/不懂)
+            document.querySelectorAll('#interaction-feedback .answer-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    // 檢查是否暫停作答
+                    if (isResponsePaused) {
+                        showMessage('老師已暫停回覆，無法送出答案。', 'error');
+                        return;
+                    }
+                    const answer = e.currentTarget.dataset.answer;
+                    await submitAnswer(answer);
+                    
+                    // 點擊後禁用所有按鈕，提供視覺回饋
+                    e.currentTarget.closest('#interaction-feedback').querySelectorAll('.answer-btn').forEach(b => {
+                        b.disabled = true;
+                        // 加上灰色樣式表示已禁用
+                        b.classList.add('bg-gray-400', 'cursor-not-allowed', 'opacity-50');
+                    });
+                    // 讓被點擊的按鈕保持原色，但仍禁用
+                    e.currentTarget.classList.remove('bg-gray-400', 'opacity-50');
+                });
+            });
             // Drawing submission.
             document.getElementById('submit-drawing-btn').addEventListener('click', async (e) => {
                 // NEW: Check pause state before submitting
@@ -7629,6 +7972,39 @@
                         from { opacity: 0; transform: scale(0.8); }
                         to { opacity: 1; transform: scale(1); }
                     }
+/* --- 【V2.5.2 新增 V1.1.0 修改】三欄式教師面板樣式 --- */
+#teacher-menu-view {
+    transition: all 0.3s ease-in-out;
+}
+
+#feedback-panel, #main-panel, #student-status-panel {
+    transition: all 0.3s ease-in-out;
+    height: 100vh; /* 確保面板填滿整個視窗高度 */
+}
+
+/* 學生列表項目樣式 */
+.student-status-item {
+    background-color: #f3f4f6; /* 淺灰色背景 */
+    border-radius: 0.375rem; /* 圓角 */
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.875rem; /* 較小的字體 */
+    font-weight: 500; /* 中等字重 */
+    color: #4b5563; /* 深灰色文字 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* 圖示和文字的間距 */
+    overflow: hidden;
+    text-overflow: ellipsis; /* 文字過長時顯示... */
+    white-space: nowrap;
+}
+
+/* 學生感受狀態圖示顏色 */
+.status-icon-懂了 { color: #16a34a; } /* 綠色 */
+.status-icon-有點了解 { color: #f59e0b; } /* 黃色 */
+.status-icon-不懂 { color: #dc2626; } /* 紅色 */
+.status-icon-unknown { color: #9ca3af; } /* 灰色 (預設) */
                 </style>
             `;
 
