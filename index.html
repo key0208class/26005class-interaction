@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>剛好學：課堂互動V2.5(阿翰plus2.5.5)</title>
+    <title>剛好學：課堂互動V2.5(阿翰plus2.5.8)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1123,6 +1123,48 @@
         .matching-line.incorrect {
             stroke: #ef4444;
         }
+		/* === v2.5.8 修改：雲教室截圖小工具樣式 START === */
+    #crop-canvas {
+        cursor: crosshair;
+        /* 讓畫布能自動縮放 */
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    #crop-modal > .glowing-border-box > div:first-child p {
+        /* 將提示文字放大 */
+        font-size: 1.25rem; /* text-xl */
+    }
+    body.modal-open #app-container {
+        filter: blur(5px);
+        transition: filter 0.3s ease-in-out;
+    }
+    .glowing-text {
+        animation: glowing-text-anim 2.5s infinite;
+    }
+    @keyframes glowing-text-anim {
+        0% { text-shadow: 0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(0, 255, 255, 0.5); }
+        50% { text-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 30px rgba(0, 255, 255, 1); }
+        100% { text-shadow: 0 0 5px rgba(0, 255, 255, 0.5), 0 0 10px rgba(0, 255, 255, 0.5); }
+    }
+    /* v2.5.8 新增：發光邊框效果 */
+    @keyframes glow-border-anim {
+        0% { box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, inset 0 0 5px #00FFFF; }
+        50% { box-shadow: 0 0 20px #00FFFF, 0 0 30px #00FFFF, inset 0 0 10px #00FFFF; }
+        100% { box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, inset 0 0 5px #00FFFF; }
+    }
+    .glowing-border-box {
+        border: 2px solid #00FFFF;
+        animation: glow-border-anim 2.5s infinite;
+        display: flex;
+        flex-direction: column;
+        width: 95%; /* 佔視窗寬度的 95% */
+        height: 95%; /* 佔視窗高度的 95% */
+        background-color: rgba(17, 24, 39, 1); /* bg-gray-900 */
+        border-radius: 0.5rem; /* rounded-lg */
+        overflow: hidden; /* 確保內容不會溢出圓角外 */
+    }
+    /* === v2.5.8 修改：雲教室截圖小工具樣式 END === */
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
@@ -1176,7 +1218,7 @@
                 <p class="text-xs">App ID: <span id="app-id-display"></span> &nbsp;&bull;&nbsp; User ID: <span id="user-id-display"></span></p>
                 <div class="mt-2">
                     <a href="https://kentxchang.blogspot.tw" target="_blank" rel="noopener noreferrer" class="made-by-text !bg-white/50 !text-indigo-600 hover:!bg-white">
-                       Made by 阿剛老師V2.5(阿翰plus2.5.5)
+                       Made by 阿剛老師V2.5(阿翰plus2.5.8)
                     </a>
                 </div>
             </div>
@@ -1266,14 +1308,14 @@
                 
                 <div class="mt-auto pt-4 border-t w-full max-w-lg mx-auto flex flex-col items-center">
                     <div class="flex gap-4 mb-4">
-                        <label for="teacher-image-upload-input" class="btn btn-purple !w-auto text-base h-11 px-4 py-2 flex items-center justify-center cursor-pointer">
-                            <i class="fas fa-upload mr-2"></i> 上傳繪圖背景圖片 (教師用) 🖼️
-                        </label>
-                        <input type="file" id="teacher-image-upload-input" accept="image/*" class="hidden">
-                        <button id="clear-teacher-background-btn" class="btn btn-red !w-auto text-base h-11 px-4 py-2 flex items-center justify-center">
-                            <i class="fas fa-trash mr-2"></i> 清除背景圖 🗑️
-                        </button>
-                    </div>
+                    <button id="open-upload-choice-btn" class="btn btn-purple !w-auto text-base h-11 px-4 py-2 flex items-center justify-center cursor-pointer">
+                        <i class="fas fa-upload mr-2"></i> 設定繪圖背景 (上傳/截圖) 🖼️
+                    </button>
+                    <input type="file" id="teacher-image-upload-input" accept="image/*" class="hidden">
+                    <button id="clear-teacher-background-btn" class="btn btn-red !w-auto text-base h-11 px-4 py-2 flex items-center justify-center">
+                        <i class="fas fa-trash mr-2"></i> 清除背景圖 🗑️
+                    </button>
+                </div>
                     <p id="teacher-image-status" class="text-gray-600 text-sm mt-2">目前沒有背景圖片。可選擇檔案或直接貼上(Ctrl+V)。</p>
                     <div id="teacher-image-preview-container" class="mt-4 hidden border border-gray-300 rounded-lg p-2 max-w-xs">
                         <img id="teacher-image-preview" src="" alt="背景圖片預覽" class="w-full h-auto rounded-md object-contain">
@@ -1581,7 +1623,38 @@
         </div>
 
     </div>
+<div id="upload-choice-modal" class="magnified-image-modal hidden">
+    <div class="magnified-image-modal-content" style="max-width: 400px;">
+        <button id="upload-choice-modal-close-btn" class="magnified-image-modal-close">×</button>
+        <h4 class="text-2xl font-bold mb-6 text-gray-800 text-center">請選擇圖片來源</h4>
+        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button id="modal-upload-btn" class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-indigo-600 text-white font-bold text-lg rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:scale-105">
+                <i class="fas fa-upload"></i>
+                <span>上傳檔案</span>
+            </button>
+            <button id="modal-screenshot-btn" class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-teal-600 text-white font-bold text-lg rounded-lg shadow-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-all duration-200 transform hover:scale-105">
+                <i class="fas fa-camera"></i>
+                <span>螢幕截圖</span>
+            </button>
+        </div>
+        <p class="text-center text-gray-500 text-sm mt-4">提示：您也可以在主畫面按 Ctrl+V 直接貼上圖片。</p>
+    </div>
+</div>
 
+<div id="crop-modal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-[1001]">
+    <div class="glowing-border-box">
+        <div class="p-2 text-center bg-gray-900 bg-opacity-80 backdrop-blur-sm flex-shrink-0">
+             <p class="text-white font-semibold glowing-text">🖱️ 拖曳滑鼠以選取裁切區域</p>
+        </div>
+        <div class="flex-grow bg-gray-800 overflow-auto flex items-center justify-center">
+            <canvas id="crop-canvas"></canvas>
+        </div>
+        <div class="flex justify-end gap-4 p-4 bg-white border-t border-gray-200 flex-shrink-0">
+            <button id="cancel-crop-btn" class="px-6 py-2 bg-gray-500 text-white font-semibold rounded-lg hover:bg-gray-600 transition-colors">取消</button>
+            <button id="confirm-crop-btn" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>確認裁切</button>
+        </div>
+    </div>
+</div>
     <div id="message-box" class="fixed top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg hidden z-50 transition-all duration-300 transform" role="alert">
         <p id="message-content"></p>
         <button id="close-message-btn" class="absolute top-1 right-2 text-white text-xl leading-none">×</button>
@@ -2294,6 +2367,11 @@
         import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc, getDoc, getDocs, updateDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- Global Variables ---
+		// === v2.5.6 新增：雲教室截圖小工具全域變數 ===
+    let capturedImage = null;
+    let cropRect = { startX: 0, startY: 0, w: 0, h: 0 };
+    let isCropping = false;
+    let currentStream = null;
         // Max dimension (px) for user uploaded images to prevent excessively large files.
         const MAX_IMAGE_DIMENSION = 1024; 
         // JPEG compression quality (0.0 to 1.0).
@@ -2451,7 +2529,16 @@
             matching: document.getElementById('interaction-matching'), // Matching UI
             feedback: document.getElementById('interaction-feedback'), // 上課感受
         };
-
+// === v2.5.6 新增：雲教室截圖小工具 DOM 元素 ===
+    const uploadChoiceModal = document.getElementById('upload-choice-modal');
+    const uploadChoiceModalCloseBtn = document.getElementById('upload-choice-modal-close-btn');
+    const openUploadChoiceBtn = document.getElementById('open-upload-choice-btn');
+    const modalUploadBtn = document.getElementById('modal-upload-btn');
+    const modalScreenshotBtn = document.getElementById('modal-screenshot-btn');
+    const cropModal = document.getElementById('crop-modal');
+    const cropCanvas = document.getElementById('crop-canvas');
+    const confirmCropBtn = document.getElementById('confirm-crop-btn');
+    const cancelCropBtn = document.getElementById('cancel-crop-btn');
         // --- Core Logic Functions ---
         /**
          * Displays the specified view section.
@@ -3310,6 +3397,179 @@ function updateStudentStatusList() {
         container.appendChild(item);
     });
 }
+// =================================================================== //
+    // === v2.5.6 新增：雲教室截圖小工具核心功能 START === //
+    // =================================================================== //
+
+    function showUploadChoiceModal() {
+        uploadChoiceModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+    }
+
+    function hideUploadChoiceModal() {
+        uploadChoiceModal.classList.add('hidden');
+        if (cropModal.classList.contains('hidden')) { // 只有當裁切視窗也關閉時才移除模糊
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    async function startCapture() {
+        try {
+            // 先隱藏選項視窗
+            hideUploadChoiceModal();
+            // 稍微延遲以確保畫面更新
+            await new Promise(resolve => setTimeout(resolve, 150));
+
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: { cursor: "always" }, audio: false });
+            currentStream = stream;
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            video.play();
+            video.addEventListener('loadedmetadata', () => {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = video.videoWidth;
+                tempCanvas.height = video.videoHeight;
+                tempCanvas.getContext('2d').drawImage(video, 0, 0);
+                stopCaptureStream();
+                processImage(tempCanvas.toDataURL('image/png'));
+            });
+        } catch (err) {
+            if (err.name !== 'NotAllowedError') {
+                console.error("螢幕擷取錯誤:", err);
+                showMessage("發生預期外的錯誤，無法擷取螢幕。", "error");
+            } else {
+                showMessage("螢幕擷取失敗：您可能已取消授權。", "info");
+            }
+            // 如果擷取失敗，要確保模糊效果被移除
+            document.body.classList.remove('modal-open');
+        }
+    }
+
+    function stopCaptureStream() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+    }
+
+    function showCropModal() {
+        if (!capturedImage) return;
+        const ctx = cropCanvas.getContext('2d');
+        cropCanvas.width = capturedImage.width;
+        cropCanvas.height = capturedImage.height;
+        ctx.drawImage(capturedImage, 0, 0); // 直接繪製原始圖
+        cropModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+    }
+
+    function hideCropModal() {
+        cropModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+        capturedImage = null;
+        isCropping = false;
+        cropRect = { startX: 0, startY: 0, w: 0, h: 0 };
+        confirmCropBtn.disabled = true;
+    }
+
+   function redrawCropCanvas() {
+        const ctx = cropCanvas.getContext('2d');
+        ctx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+        ctx.drawImage(capturedImage, 0, 0);
+
+        const actualX = cropRect.w > 0 ? cropRect.startX : cropRect.startX + cropRect.w;
+        const actualY = cropRect.h > 0 ? cropRect.startY : cropRect.startY + cropRect.h;
+        const actualW = Math.abs(cropRect.w);
+        const actualH = Math.abs(cropRect.h);
+
+        if (actualW > 10 && actualH > 10) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+            ctx.fillRect(0, 0, cropCanvas.width, cropCanvas.height);
+            ctx.drawImage(capturedImage, actualX, actualY, actualW, actualH, actualX, actualY, actualW, actualH);
+            
+            // v2.5.8 還原：改回原本的白色虛線效果
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+
+            ctx.strokeRect(actualX, actualY, actualW, actualH);
+            ctx.restore();
+        }
+    }
+
+    function performCrop() {
+        if (!cropRect.w || !cropRect.h || cropRect.w <= 0 || cropRect.h <= 0) return;
+
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = cropRect.w;
+        croppedCanvas.height = cropRect.h;
+        croppedCanvas.getContext('2d').drawImage(
+            capturedImage,
+            cropRect.startX, cropRect.startY, cropRect.w, cropRect.h,
+            0, 0, cropRect.w, cropRect.h
+        );
+
+        // --- 整合點：將裁切結果傳給「剛好學」的圖片處理函式 ---
+        croppedCanvas.toBlob(function(blob) {
+            const screenshotFile = new File([blob], "screenshot.jpg", { type: "image/jpeg", lastModified: new Date().getTime() });
+            // 使用「剛好學」現有的函式來處理圖片檔案
+            handleImageFileForTeacher(screenshotFile, 'teacher-image-status', 'teacher-image-preview-container', 'teacher-image-preview');
+            hideCropModal();
+        }, 'image/jpeg', 0.9); // 使用 JPEG 格式以縮小檔案大小
+    }
+
+    function processImage(imageSrc) {
+        capturedImage = new Image();
+        capturedImage.onload = () => {
+            showCropModal();
+            if (imageSrc.startsWith('blob:')) URL.revokeObjectURL(imageSrc);
+        };
+        capturedImage.onerror = () => showMessage('無法載入圖片。', 'error');
+        capturedImage.src = imageSrc;
+    }
+
+    // --- 裁切畫布的滑鼠事件 ---
+    const handleCropMouseMove = (e) => {
+        if (!isCropping) return;
+        const rect = cropCanvas.getBoundingClientRect();
+        // 根據 canvas 在畫面上的縮放比例，校正滑鼠座標
+        const scaleX = cropCanvas.width / rect.width;
+        const scaleY = cropCanvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        cropRect.w = x - cropRect.startX;
+        cropRect.h = y - cropRect.startY;
+        redrawCropCanvas();
+    };
+
+    const handleCropMouseUp = () => {
+        if (!isCropping) return;
+        isCropping = false;
+
+        window.removeEventListener('mousemove', handleCropMouseMove);
+        window.removeEventListener('mouseup', handleCropMouseUp);
+
+        if (cropRect.w < 0) {
+            cropRect.startX += cropRect.w;
+            cropRect.w = Math.abs(cropRect.w);
+        }
+        if (cropRect.h < 0) {
+            cropRect.startY += cropRect.h;
+            cropRect.h = Math.abs(cropRect.h);
+        }
+
+        if (cropRect.w > 10 && cropRect.h > 10) {
+             confirmCropBtn.disabled = false;
+        } else {
+            cropRect = { startX: 0, startY: 0, w: 0, h: 0 };
+            redrawCropCanvas(); // 重繪以移除小範圍選取框
+        }
+    };
+
+    // =================================================================== //
+    // === v2.5.6 新增：雲教室截圖小工具核心功能 END === //
+    // =================================================================== //
         // --- Firebase Functions ---
 
         /**
@@ -5915,7 +6175,72 @@ function updateStudentStatusList() {
             reader.readAsDataURL(file);
         }
 
+// =================================================================== //
+    // === v2.5.6 新增：雲教室截圖小工具事件監聽 START === //
+    // =================================================================== //
 
+    // 監聽主畫面的「設定背景」按鈕
+    openUploadChoiceBtn.addEventListener('click', showUploadChoiceModal);
+    uploadChoiceModalCloseBtn.addEventListener('click', hideUploadChoiceModal);
+
+    // 監聽選項視窗中的「上傳檔案」按鈕
+    modalUploadBtn.addEventListener('click', () => {
+        // 觸發隱藏的檔案上傳 input
+        document.getElementById('teacher-image-upload-input').click();
+        hideUploadChoiceModal();
+    });
+
+    // 監聽選項視窗中的「螢幕截圖」按鈕
+    modalScreenshotBtn.addEventListener('click', startCapture);
+
+    // 監聽裁切視窗中的「取消」與「確認」按鈕
+    cancelCropBtn.addEventListener('click', hideCropModal);
+    confirmCropBtn.addEventListener('click', performCrop);
+
+    // 在主畫面貼上圖片 (Ctrl+V) 的功能
+    document.addEventListener('paste', (e) => {
+        // 只有在教師主選單且沒有任何彈窗時才觸發
+        if (views.teacherMenu.classList.contains('hidden') || !cropModal.classList.contains('hidden') || !uploadChoiceModal.classList.contains('hidden')) return;
+
+        const items = e.clipboardData?.items;
+        if (!items) return;
+
+        for (const item of items) {
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                e.preventDefault();
+                const blob = item.getAsFile();
+                if (blob) {
+                    showMessage('成功從剪貼簿貼上圖片！', 'success');
+                    processImage(URL.createObjectURL(blob));
+                    return;
+                }
+            }
+        }
+    });
+
+    // 裁切畫布的 mousedown 事件
+    cropCanvas.addEventListener('mousedown', (e) => {
+        isCropping = true;
+        confirmCropBtn.disabled = true;
+
+        const rect = cropCanvas.getBoundingClientRect();
+        const scaleX = cropCanvas.width / rect.width;
+        const scaleY = cropCanvas.height / rect.height;
+
+        cropRect = {
+            startX: (e.clientX - rect.left) * scaleX,
+            startY: (e.clientY - rect.top) * scaleY,
+            w: 0,
+            h: 0
+        };
+
+        window.addEventListener('mousemove', handleCropMouseMove);
+        window.addEventListener('mouseup', handleCropMouseUp);
+    });
+
+    // =================================================================== //
+    // === v2.5.6 新增：雲教室截圖小工具事件監聽 END === //
+    // =================================================================== //
         function setupEventListeners() {
 		// --- 【V1.1.0 修改】三欄式面板事件監聽 ---
             // (V1.1.0) 移除舊的面板收合功能
